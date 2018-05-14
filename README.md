@@ -1,3 +1,3 @@
-Give initial position from the frontend
-Automatically generate point keys
-Fix double trigger
+# Alkaline Rain
+
+A simple game with natural language processing techonology behind it.

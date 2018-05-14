@@ -38,6 +38,8 @@ const myFunction = (e)=> {
 }
 
 const handleKeyDown = (e)=> {
+  // console.log(e.keyCode);
+
   if (e.keyCode === 39) {
     state.paddle.rightPressed = true;
   } else if (e.keyCode === 37) {
@@ -45,6 +47,8 @@ const handleKeyDown = (e)=> {
   }
 }
 const handleKeyUp = (e)=> {
+  // console.log(e.keyCode);
+
   if (e.keyCode === 39) {
     state.paddle.rightPressed = false;
   } else if (e.keyCode === 37) {

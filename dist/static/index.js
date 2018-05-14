@@ -12,10 +12,7 @@ const paddleWidth = 75;
 
 const canvasHeight = 400;
 const canvasWidth = 600;
-// Rendering constants
-const rConst = {
-  speedTargetMvmnt: 0.1
-}
+
 
 // State variables, mostly for rendering
 const ctx = canvas.getContext("2d");
@@ -79,6 +76,7 @@ document.addEventListener("keyup", handleKeyUp, false);
 // Main actions
 document.addEventListener("DOMContentLoaded", function(event) { 
   myInput.addEventListener("input", myFunction);
+  // myInput.addEventListener("keydown", handleKeyDownEnter);
   myInput.addEventListener("keyup", handleHitEnter);
   myInput.state = state;
 

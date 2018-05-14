@@ -14,6 +14,11 @@ const brickOffsetLeft = 30;
 const canvasHeight = 400;
 const canvasWidth = 600;
 
+// Rendering constants are needed only here.
+const rConst = {
+  speedTargetMvmnt: 0.01
+}
+
 // Render "objects"
 const renderBall = (ctx, s)=> {
   ctx.beginPath();

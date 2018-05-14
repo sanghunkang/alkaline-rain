@@ -56,6 +56,7 @@ def hit_enter():
     cmd = request.get_json()["cmd"]
     # x = [point for point in arr_point if point["id"] != cmd]
     arr_point.pop()
+    print(arr_point)
     return jsonify({"tasks": arr_point})
  
 if __name__ == "__main__":
