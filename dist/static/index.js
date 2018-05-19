@@ -36,20 +36,20 @@ var state = {
   arrBrick: [],
   ball: stateBall,
   panel: statePanel,
-  paddle: statePaddle,
 }
 
 // bind the state to the event listeners
 var renderer = new Renderer(ctx, state);
 var stateCalculator = new StateCalculator(state);
 
-// Main actions
-document.addEventListener("DOMContentLoaded", function(event) { 
-  // Apply events listeners to elements
-  myInput.addEventListener("input", (e)=> console.log(e.target.value));
-  myInput.addEventListener("keyup", stateCalculator.handleHitEnter);
+// Main actions 
+// Apply events listeners to elements
+myInput.addEventListener("input", e => console.log(e.target.value));
+myInput.addEventListener("keyup", stateCalculator.handleHitEnter);
 
-  // Render objects using rendering constants and state variables read-only
-  setInterval(()=>{ renderer.render()}, 10);
-  setInterval(()=>{ stateCalculator.calculateState(state) }, 10);
-});
+// Render objects using rendering constants and state variables read-only
+setInterval(renderer.render, 10);
+setInterval(stateCalculator.calculateState, 10);
+
+
+

@@ -27,22 +27,26 @@ class StateCalculator {
     this._updateStateBall = this._updateStateBall.bind(this);
     this._updateStatePanel = this._updateStatePanel.bind(this);
 
+    this.calculateState = this.calculateState.bind(this);
+    this.handleHitEnter = this.handleHitEnter.bind(this);
+
     // Initialising the remaining uninitialised state variables
     // The device info will be sent from this function
     fetch('/api/initialize', {
       method: 'POST',
-    }).then((res)=> {
+    })
+    .then(res => {
       if (!res.ok) {
         throw Error(res.statusText);
       }
       return res.json();
-    }).then((data) => {
+    })
+    .then(data => {
       this.state.arrBrick = data.arrBrick;
       console.log('Initialised by state manager');
       console.log(this.state);
-    }).catch((e) => {
-      console.log(e);
-    });
+    })
+    .catch(err => console.log(err));
   }
 
   // Private methods
@@ -83,7 +87,7 @@ class StateCalculator {
     panel.appendChild(content);
   }
 
-  calculateState(state) {
+  calculateState() {
     this._updateArrBrick();
     this._updateStateBall();
     this._updateStatePanel();
@@ -101,18 +105,19 @@ class StateCalculator {
         method: 'POST',
         headers: {'content-type': 'application/json'},
         body: JSON.stringify({'cmd': cmd}),
-      }).then((res)=> {
+      })
+      .then(res => {
         if (!res.ok) {
           throw Error(res.statusText);
         }
         return res.json();
-      }).then((data) => {
-        this.state.arrBrick = data.tasks;
+      })
+      .then(data => {
+        this.state.arrBrick = data.arrBrick;
         console.log(data);
         console.log(this.state);
-      }).catch((e) => {
-        console.log(e);
-      });
+      })
+      .catch(err => console.log(err));
     }
   }
 }
