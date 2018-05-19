@@ -1,6 +1,5 @@
-import { myFunction, handleHitEnter, handleKeyDown, handleKeyUp } from '/static/eventHandlers.js';
-import { render } from '/static/render.js';
-import { calculateState } from '/static/calculateState.js';
+import { Renderer } from '/static/render.js';
+import { StateCalculator } from '/static/calculateState.js';
 
 const canvas = document.getElementById("myCanvas");
 const myInput = document.getElementById("myInput");
@@ -12,7 +11,10 @@ const paddleWidth = 75;
 
 const canvasHeight = 400;
 const canvasWidth = 600;
-
+// Rendering constants
+const rConst = {
+  speedTargetMvmnt: 0.1
+}
 
 // State variables, mostly for rendering
 const ctx = canvas.getContext("2d");
@@ -29,12 +31,6 @@ var stateBall = {
   dy: -2,
 }
 
-var statePaddle = {
-  x: (canvas.width-paddleWidth)/2,
-  rightPressed: false,
-  leftPressed: false,
-}
-
 var state = {
   init: false,
   arrBrick: [],
@@ -43,44 +39,17 @@ var state = {
   paddle: statePaddle,
 }
 
-const updateFrame = ()=> {
-  // Actions using state variables on read-only manner
-  render(ctx, state);
-  calculateState(state);
-}
-
-
-
-const initialize = (state)=> {
-  // The device info will be sent from this function
-  console.log('Initialising');
-  fetch('/api/initialize', {
-    method: 'POST',
-  }).then((res)=> {
-    if (!res.ok) {
-      throw Error(res.statusText);
-    }
-    return res.json();
-  }).then((data) => {
-    state.arrBrick = data.arrBrick;
-  }).catch((e) => {
-    console.log(e);
-  });
-}
-
-
-// Apply events listeners to elements
-document.addEventListener("keydown", handleKeyDown, false);
-document.addEventListener("keyup", handleKeyUp, false);
+// bind the state to the event listeners
+var renderer = new Renderer(ctx, state);
+var stateCalculator = new StateCalculator(state);
 
 // Main actions
 document.addEventListener("DOMContentLoaded", function(event) { 
-  myInput.addEventListener("input", myFunction);
-  // myInput.addEventListener("keydown", handleKeyDownEnter);
-  myInput.addEventListener("keyup", handleHitEnter);
-  myInput.state = state;
+  // Apply events listeners to elements
+  myInput.addEventListener("input", (e)=> console.log(e.target.value));
+  myInput.addEventListener("keyup", stateCalculator.handleHitEnter);
 
-  initialize(state);
-  console.log(state);
-  setInterval(updateFrame, 50);
+  // Render objects using rendering constants and state variables read-only
+  setInterval(()=>{ renderer.render()}, 10);
+  setInterval(()=>{ stateCalculator.calculateState(state) }, 10);
 });

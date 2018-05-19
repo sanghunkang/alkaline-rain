@@ -20,48 +20,62 @@ const rConst = {
 }
 
 // Render "objects"
-const renderBall = (ctx, s)=> {
-  ctx.beginPath();
-  ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
-}
-const renderPaddle = (ctx, s)=> {
-  ctx.beginPath();
-  ctx.rect(s.x, canvasHeight - paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = "#FF95DD";
-  ctx.fill();
-  ctx.closePath();
-}
 
-const renderBrick = (ctx, brick)=> {
-  ctx.beginPath();
-  ctx.arc(brick.x, brick.y, 10, 0, Math.PI*2);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.font = "20px Arial";
-  ctx.fillText(brick.id, brick.x, brick.y);
-  ctx.closePath();
-}
 
-const renderArrBrick = (ctx, arrBrick)=> {
-  arrBrick.map((brick)=> renderBrick(ctx, brick));
-}
+class Renderer {
+  constructor(ctx, state) {
+    this.ctx = ctx;
+    this.state = state;
 
-const renderPanel = ()=> {
-  ;
-}
+    this.renderBall = this.renderBall.bind(this);
+    this.renderPaddle = this.renderPaddle.bind(this);
+    this.renderArrBrick = this.renderArrBrick.bind(this);
+    this.renderPanel = this.renderPanel.bind(this);
+  }
 
-const render = (ctx, state)=> {
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  renderBall() {
+    let s = this.state.ball;
+    this.ctx.beginPath();
+    this.ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    this.ctx.fillStyle = "#0095DD";
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
+  renderPaddle() {
+    let s = this.state.paddle
+    this.ctx.beginPath();
+    this.ctx.rect(s.x, canvasHeight - paddleHeight, paddleWidth, paddleHeight);
+    this.ctx.fillStyle = "#FF95DD";
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
 
-  renderArrBrick(ctx, state.arrBrick);
-  renderBall(ctx, state.ball);
-  renderPaddle(ctx, state.paddle);
-  renderPanel(ctx, state.panel);
+  renderArrBrick() {
+    this.state.arrBrick.map((brick)=> {
+      this.ctx.beginPath();
+      this.ctx.arc(brick.x, brick.y, 10, 0, Math.PI*2);
+      this.ctx.fillStyle = "#0095DD";
+      this.ctx.fill();
+      this.ctx.font = "20px Arial";
+      this.ctx.fillText(brick.id, brick.x, brick.y);
+      this.ctx.closePath();
+    });
+  }
+
+  renderPanel() {
+    ;
+  }
+
+  render() {
+    this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    this.renderArrBrick();
+    this.renderBall();
+    this.renderPaddle();
+    this.renderPanel();
+  }
 }
 
 export {
-  render,
+  Renderer,
 }
