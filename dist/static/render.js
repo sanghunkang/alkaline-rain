@@ -49,6 +49,7 @@ class Renderer {
       this.ctx.fillStyle = "#0095DD";
       this.ctx.fill();
       this.ctx.font = "20px Arial";
+      this.ctx.fillStyle = "#FF95DD";
       this.ctx.fillText(brick.id, brick.x, brick.y);
       this.ctx.closePath();
     });
