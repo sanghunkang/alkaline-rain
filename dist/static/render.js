@@ -45,12 +45,12 @@ class Renderer {
   _renderArrBrick() {
     this.state.arrBrick.map((brick)=> {
       this.ctx.beginPath();
-      this.ctx.arc(brick.x, brick.y, 10, 0, Math.PI*2);
+      this.ctx.arc(brick.x, brick.y, 2, 0, Math.PI*2);
       this.ctx.fillStyle = "#0095DD";
       this.ctx.fill();
-      this.ctx.font = "20px Arial";
+      this.ctx.font = "15px Arial";
       this.ctx.fillStyle = "#FF95DD";
-      this.ctx.fillText(brick.id, brick.x, brick.y);
+      this.ctx.fillText(brick.word, brick.x, brick.y);
       this.ctx.closePath();
     });
   }

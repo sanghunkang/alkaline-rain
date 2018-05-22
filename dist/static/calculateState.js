@@ -1,8 +1,8 @@
 import { tSNE } from '/static/tsne.js'; 
 var tsne = new tSNE({
   epsilon: 10,
-  perplexity: 10,
-  dim: 50,
+  perplexity: 5,
+  dim: 2,
 });
 
 
@@ -53,6 +53,10 @@ class StateCalculator {
       this.state.arrBrick = data.arrBrick;
       console.log('Initialised by state manager');
       console.log(this.state);
+
+      let arrEmbedding = this.state.arrBrick.map(brick => brick.embedding);
+      tsne.initDataRaw(arrEmbedding);
+
     })
     .catch(err => console.log(err));
   }
@@ -81,17 +85,13 @@ class StateCalculator {
   }
 
   _updateArrBrick() {
-    // this.state.arrBrick
-    // tsne.initDataDist(dists);
-    // tsne.step();
-
-    // var Y = tsne.getSolution();
-
-
-    this.state.arrBrick.map((s)=> {
-      s.x += (s.tx - s.x)*rConst.speedTargetMvmnt;
-      s.y += (s.ty - s.y)*rConst.speedTargetMvmnt;   
-    });
+    tsne.step();
+    let Y = tsne.getSolution();
+    for (let i = 0; i < 20; i++) { 
+      this.state.arrBrick[i].x = 400/2 + Y[i][0]*10 + 100;
+      this.state.arrBrick[i].y = 400/2 + Y[i][1]*10;
+    }
+    console.log(this.state.arrBrick);
   }
 
   _updateStatePanel() {

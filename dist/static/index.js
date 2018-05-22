@@ -26,7 +26,7 @@ var statePanel = {
 var stateBall = {
   x: canvas.width/2,
   y: canvas.height-30,
-  r: 10,
+  r: 2,
   dx: 2,
   dy: -2,
 }
