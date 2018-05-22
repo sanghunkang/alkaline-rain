@@ -1,3 +1,11 @@
+import { tSNE } from '/static/tsne.js'; 
+var tsne = new tSNE({
+  epsilon: 10,
+  perplexity: 10,
+  dim: 50,
+});
+
+
 // Rendering constants
 const paddleHeight = 10;
 const paddleWidth = 75;
@@ -73,6 +81,13 @@ class StateCalculator {
   }
 
   _updateArrBrick() {
+    // this.state.arrBrick
+    // tsne.initDataDist(dists);
+    // tsne.step();
+
+    // var Y = tsne.getSolution();
+
+
     this.state.arrBrick.map((s)=> {
       s.x += (s.tx - s.x)*rConst.speedTargetMvmnt;
       s.y += (s.ty - s.y)*rConst.speedTargetMvmnt;   
