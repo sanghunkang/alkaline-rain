@@ -10,9 +10,21 @@ r = redis.StrictRedis(**config["redis"])
 
 SIZE_VOCABULARY = 1000
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
 
-def parse_str2arr(str_raw):
-    return [float(x) for x in str_raw.split(" ")]
+class InvalidCommandError(Error):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expression -- input expression in which the error occurred
+        message -- explanation of the error
+    """
+
+    def __init__(self, expression, message):
+        self.expression = expression
+        self.message = message
 
 class EmbeddingFeeder():
     def __init__(self):
@@ -39,10 +51,10 @@ class EmbeddingFeeder():
         str_raw = r.get(word)
         if str_raw == None:
             # See ISSUE 8
-            raise Exception("A better definition will be implemented")
+            raise InvalidCommandError("An invalid command", "Thus printing error")
         else:
             str_raw = str_raw.decode("utf-8")
-            embedding = parse_str2arr(str_raw)
+            embedding = [float(x) for x in str_raw.split(" ")]
             return embedding
 
     def get_point(self):

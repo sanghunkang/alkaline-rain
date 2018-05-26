@@ -131,7 +131,9 @@ class StateCalculator {
         console.log(data);
         // Do something with the embedding
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log('Perhaps it\'s not really a word!');
+      });
     }
   }
 
@@ -157,6 +159,7 @@ class StateCalculator {
       // Do something with the embedding
     })
     .catch(err => console.log(err));
+
   }
 }
 
