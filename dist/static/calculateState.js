@@ -37,6 +37,7 @@ class StateCalculator {
 
     this.calculateState = this.calculateState.bind(this);
     this.handleHitEnter = this.handleHitEnter.bind(this);
+    this.handleFeedObject = this.handleFeedObject.bind(this);
 
     // Initialising the remaining uninitialised state variables
     // The device info will be sent from this function
@@ -87,11 +88,11 @@ class StateCalculator {
   _updateArrBrick() {
     tsne.step();
     let Y = tsne.getSolution();
-    for (let i = 0; i < 20; i++) { 
+    for (let i = 0; i < this.state.arrBrick.length; i++) { 
       this.state.arrBrick[i].x = 400/2 + Y[i][0]*10 + 100;
       this.state.arrBrick[i].y = 400/2 + Y[i][1]*10;
     }
-    console.log(this.state.arrBrick);
+    // console.log(this.state.arrBrick);
   }
 
   _updateStatePanel() {
@@ -113,10 +114,9 @@ class StateCalculator {
     if (e.keyCode === 13) {
       console.log(e);
       let cmd = e.target.value;
-      console.log('I have now', cmd);
       e.target.value = '';
 
-      fetch("/api/hit_enter", {
+      fetch("/api/enter_cmd", {
         method: 'POST',
         headers: {'content-type': 'application/json'},
         body: JSON.stringify({'cmd': cmd}),
@@ -128,15 +128,36 @@ class StateCalculator {
         return res.json();
       })
       .then(data => {
-        this.state.arrBrick = data.arrBrick;
         console.log(data);
-        console.log(this.state);
+        // Do something with the embedding
       })
       .catch(err => console.log(err));
     }
   }
+
+  handleFeedObject(e) {
+    console.log(this.state);
+    fetch('/api/feed_object', {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({}),
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw Error(res.statusText);
+      }
+      return res.json();
+    })
+    .then(data => {
+      this.state.arrBrick.push(data.point)
+      console.log(data);
+
+      let arrEmbedding = this.state.arrBrick.map(brick => brick.embedding);
+      tsne.initDataRaw(arrEmbedding);
+      // Do something with the embedding
+    })
+    .catch(err => console.log(err));
+  }
 }
 
-export {
-  StateCalculator,
-}
+export { StateCalculator }
