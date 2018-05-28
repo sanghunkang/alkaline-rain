@@ -176,16 +176,33 @@ var d2p = function(D, perplexity, tol) {
 // helper function
 function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 
-var tSNE = function(opt) {
-  var opt = opt || {};
-  this.perplexity = getopt(opt, "perplexity", 30); // effective number of nearest neighbors
-  this.dim = getopt(opt, "dim", 2); // by default 2-D tSNE
-  this.epsilon = getopt(opt, "epsilon", 10); // learning rate
+// var tSNE = function(opt) {
+//   var opt = opt || {};
+//   this.perplexity = getopt(opt, "perplexity", 30); // effective number of nearest neighbors
+//   this.dim = getopt(opt, "dim", 2); // by default 2-D tSNE
+//   this.epsilon = getopt(opt, "epsilon", 10); // learning rate
   
-  this.iter = 0;
-}
+//   this.iter = 0;
+// }
 
-tSNE.prototype = {
+class tSNE {
+  constructor(state) {
+    var opt = opt || {};
+    this.perplexity = getopt(opt, "perplexity", 30); // effective number of nearest neighbors
+    this.dim = getopt(opt, "dim", 2); // by default 2-D tSNE
+    this.epsilon = getopt(opt, "epsilon", 10); // learning rate
+    
+    this.iter = 0;
+
+    this.initDataRaw = this.initDataRaw.bind(this);
+    this.initSolution = this.initSolution.bind(this);
+    this.getSolution = this.getSolution.bind(this);
+    this.step = this.step.bind(this);
+    this.debugGrad = this.debugGrad.bind(this);
+    this.costGrad = this.costGrad.bind(this);
+  }
+
+// tSNE.prototype = {
   // this function takes a set of high-dimensional points
   // and creates matrix P from them using gaussian kernel
   initDataRaw(X) {
@@ -197,27 +214,27 @@ tSNE.prototype = {
     this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
     this.N = N; // back up the size of the dataset
     this.initSolution(); // refresh this
-  },
+  }
 
   // this function takes a given distance matrix and creates
   // matrix P from them.
   // D is assumed to be provided as a list of lists, and should be symmetric
-  initDataDist(D) {
-    var N = D.length;
-    assert(N > 0, " X is empty? You must have some data!");
-    // convert D to a (fast) typed array version
-    var dists = zeros(N * N); // allocate contiguous array
-    for(var i=0;i<N;i++) {
-      for(var j=i+1;j<N;j++) {
-        var d = D[i][j];
-        dists[i*N+j] = d;
-        dists[j*N+i] = d;
-      }
-    }
-    this.P = d2p(dists, this.perplexity, 1e-4);
-    this.N = N;
-    this.initSolution(); // refresh this
-  },
+  // initDataDist(D) {
+  //   var N = D.length;
+  //   assert(N > 0, " X is empty? You must have some data!");
+  //   // convert D to a (fast) typed array version
+  //   var dists = zeros(N * N); // allocate contiguous array
+  //   for(var i=0;i<N;i++) {
+  //     for(var j=i+1;j<N;j++) {
+  //       var d = D[i][j];
+  //       dists[i*N+j] = d;
+  //       dists[j*N+i] = d;
+  //     }
+  //   }
+  //   this.P = d2p(dists, this.perplexity, 1e-4);
+  //   this.N = N;
+  //   this.initSolution(); // refresh this
+  // }
 
   // (re)initializes the solution to random
   initSolution() {
@@ -226,12 +243,12 @@ tSNE.prototype = {
     this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
     this.ystep = randn2d(this.N, this.dim, 0.0); // momentum accumulator
     this.iter = 0;
-  },
+  }
 
   // return pointer to current solution
   getSolution() {
     return this.Y;
-  },
+  }
 
   // perform a single step of optimization to improve the embedding
   step() {
@@ -241,11 +258,12 @@ tSNE.prototype = {
     var cg = this.costGrad(this.Y); // evaluate gradient
     var cost = cg.cost;
     var grad = cg.grad;
+    console.log(cost, grad);
 
     // perform gradient step
     var ymean = zeros(this.dim);
-    for(var i=0;i<N;i++) {
-      for(var d=0;d<this.dim;d++) {
+    for(var i = 0; i < N; i++) {
+      for(var d = 0; d< this.dim; d++) {
         var gid = grad[i][d];
         var sid = this.ystep[i][d];
         var gainid = this.gains[i][d];
@@ -268,15 +286,15 @@ tSNE.prototype = {
     }
 
     // reproject Y to be zero mean
-    for(var i=0;i<N;i++) {
-      for(var d=0;d<this.dim;d++) {
+    for(var i = 0; i < N; i++) {
+      for (var d = 0; d < this.dim; d++) {
         this.Y[i][d] -= ymean[d]/N;
       }
     }
 
     //if(this.iter%100===0) console.log('iter ' + this.iter + ', cost: ' + cost);
     return cost; // return current cost
-  },
+  }
 
   // for debugging: gradient check
   debugGrad() {
@@ -304,7 +322,7 @@ tSNE.prototype = {
         this.Y[i][d] = yold;
       }
     }
-  },
+  }
 
   // return cost and gradient, given an arrangement
   costGrad(Y) {

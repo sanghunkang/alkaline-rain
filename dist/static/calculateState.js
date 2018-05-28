@@ -152,7 +152,7 @@ class StateCalculator {
     })
     .then(data => {
       this.state.arrBrick.push(data.point)
-      console.log(data);
+      // console.log(data);
 
       let arrEmbedding = this.state.arrBrick.map(brick => brick.embedding);
       tsne.initDataRaw(arrEmbedding);
