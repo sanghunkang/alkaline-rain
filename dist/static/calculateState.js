@@ -88,11 +88,13 @@ class StateCalculator {
   _updateArrBrick() {
     tsne.step();
     let Y = tsne.getSolution();
+    let normCoef = tsne.getNormCoef();
+    // console.log(Y);
     for (let i = 0; i < this.state.arrBrick.length; i++) { 
-      this.state.arrBrick[i].x = 400/2 + Y[i][0]*10 + 100;
-      this.state.arrBrick[i].y = 400/2 + Y[i][1]*10;
+      this.state.arrBrick[i].x = 400/2 + Y[i][0]/normCoef[0]*300 + 100;
+      this.state.arrBrick[i].y = 400/2 + Y[i][1]/normCoef[1]*300;
     }
-    // console.log(this.state.arrBrick);
+    console.log(this.state.arrBrick);
   }
 
   _updateStatePanel() {

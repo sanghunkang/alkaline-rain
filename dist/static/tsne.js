@@ -185,6 +185,20 @@ function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 //   this.iter = 0;
 // }
 
+var getVecMax = (vec0, vec1)=> {
+  let x = vec0[0] > vec1[0]? vec0[0] : vec1[0];
+  let y = vec0[1] > vec1[1]? vec0[1] : vec1[1];
+  return [x, y]
+}
+
+var getVecMin = (vec0, vec1)=> {
+  let x = vec0[0] < vec1[0]? vec0[0] : vec1[0];
+  let y = vec0[1] < vec1[1]? vec0[1] : vec1[1];
+  return [x, y]
+}
+
+// (v0, v1) => return [v0[0] < v1[0]? v0[0] : v1[0], v0[1] < v1[1]? v0[1] : v1[1]]
+
 class tSNE {
   constructor(state) {
     var opt = opt || {};
@@ -197,6 +211,7 @@ class tSNE {
     this.initDataRaw = this.initDataRaw.bind(this);
     this.initSolution = this.initSolution.bind(this);
     this.getSolution = this.getSolution.bind(this);
+    this.getNormCoef = this.getNormCoef.bind(this);
     this.step = this.step.bind(this);
     this.debugGrad = this.debugGrad.bind(this);
     this.costGrad = this.costGrad.bind(this);
@@ -250,6 +265,12 @@ class tSNE {
     return this.Y;
   }
 
+  getNormCoef() {
+    var vecMax = this.Y.reduce(getVecMax);
+    var vecMin = this.Y.reduce(getVecMin);
+    return [vecMax[0] - vecMin[0], vecMax[1] - vecMin[1]];
+  }
+
   // perform a single step of optimization to improve the embedding
   step() {
     this.iter += 1;
@@ -258,7 +279,6 @@ class tSNE {
     var cg = this.costGrad(this.Y); // evaluate gradient
     var cost = cg.cost;
     var grad = cg.grad;
-    console.log(cost, grad);
 
     // perform gradient step
     var ymean = zeros(this.dim);
