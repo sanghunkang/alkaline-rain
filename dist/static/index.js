@@ -49,7 +49,7 @@ myInput.addEventListener("keyup", stateCalculator.handleHitEnter);
 
 // Render objects using rendering constants and state variables read-only
 setInterval(renderer.render, 10);
-setInterval(stateCalculator.calculateState, 10);
+setInterval(stateCalculator.calculateState, 50);
 setInterval(stateCalculator.handleFeedObject, 5000);
 
 

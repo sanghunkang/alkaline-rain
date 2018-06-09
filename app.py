@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 from embeddingFeeder import EmbeddingFeeder
 
-NUM_WORD = 20
+NUM_WORD = 40
 
 app = Flask(__name__, template_folder="dist", static_folder="dist/static")
 embedding_feeder = EmbeddingFeeder()

@@ -94,7 +94,6 @@ class StateCalculator {
       this.state.arrBrick[i].x = 400/2 + Y[i][0]/normCoef[0]*300 + 100;
       this.state.arrBrick[i].y = 400/2 + Y[i][1]/normCoef[1]*300;
     }
-    console.log(this.state.arrBrick);
   }
 
   _updateStatePanel() {
@@ -153,12 +152,11 @@ class StateCalculator {
       return res.json();
     })
     .then(data => {
-      this.state.arrBrick.push(data.point)
-      // console.log(data);
+      this.state.arrBrick.push(data.point);
+      console.log(this.state.arrBrick);
 
-      let arrEmbedding = this.state.arrBrick.map(brick => brick.embedding);
-      tsne.initDataRaw(arrEmbedding);
       // Do something with the embedding
+      tsne.updateDataRaw(data.point.embedding);
     })
     .catch(err => console.log(err));
 

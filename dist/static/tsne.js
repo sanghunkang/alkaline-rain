@@ -174,30 +174,19 @@ var d2p = function(D, perplexity, tol) {
 }
 
 // helper function
-function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; }
-
-// var tSNE = function(opt) {
-//   var opt = opt || {};
-//   this.perplexity = getopt(opt, "perplexity", 30); // effective number of nearest neighbors
-//   this.dim = getopt(opt, "dim", 2); // by default 2-D tSNE
-//   this.epsilon = getopt(opt, "epsilon", 10); // learning rate
-  
-//   this.iter = 0;
-// }
+var sign = (x)=> { return x > 0 ? 1 : x < 0 ? -1 : 0; }
 
 var getVecMax = (vec0, vec1)=> {
   let x = vec0[0] > vec1[0]? vec0[0] : vec1[0];
   let y = vec0[1] > vec1[1]? vec0[1] : vec1[1];
-  return [x, y]
+  return [x, y];
 }
 
 var getVecMin = (vec0, vec1)=> {
   let x = vec0[0] < vec1[0]? vec0[0] : vec1[0];
   let y = vec0[1] < vec1[1]? vec0[1] : vec1[1];
-  return [x, y]
+  return [x, y];
 }
-
-// (v0, v1) => return [v0[0] < v1[0]? v0[0] : v1[0], v0[1] < v1[1]? v0[1] : v1[1]]
 
 class tSNE {
   constructor(state) {
@@ -206,9 +195,11 @@ class tSNE {
     this.dim = getopt(opt, "dim", 2); // by default 2-D tSNE
     this.epsilon = getopt(opt, "epsilon", 10); // learning rate
     
+    this.X = [];
     this.iter = 0;
 
     this.initDataRaw = this.initDataRaw.bind(this);
+    this.updateDataRaw = this.updateDataRaw.bind(this);
     this.initSolution = this.initSolution.bind(this);
     this.getSolution = this.getSolution.bind(this);
     this.getNormCoef = this.getNormCoef.bind(this);
@@ -217,39 +208,32 @@ class tSNE {
     this.costGrad = this.costGrad.bind(this);
   }
 
-// tSNE.prototype = {
   // this function takes a set of high-dimensional points
   // and creates matrix P from them using gaussian kernel
   initDataRaw(X) {
-    var N = X.length;
-    var D = X[0].length;
+    this.X = X;
+
+    var N = this.X.length;
+    var D = this.X[0].length;
     assert(N > 0, " X is empty? You must have some data!");
     assert(D > 0, " X[0] is empty? Where is the data?");
-    var dists = xtod(X); // convert X to distances using gaussian kernel
+    var dists = xtod(this.X); // convert X to distances using gaussian kernel
     this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
     this.N = N; // back up the size of the dataset
     this.initSolution(); // refresh this
   }
 
-  // this function takes a given distance matrix and creates
-  // matrix P from them.
-  // D is assumed to be provided as a list of lists, and should be symmetric
-  // initDataDist(D) {
-  //   var N = D.length;
-  //   assert(N > 0, " X is empty? You must have some data!");
-  //   // convert D to a (fast) typed array version
-  //   var dists = zeros(N * N); // allocate contiguous array
-  //   for(var i=0;i<N;i++) {
-  //     for(var j=i+1;j<N;j++) {
-  //       var d = D[i][j];
-  //       dists[i*N+j] = d;
-  //       dists[j*N+i] = d;
-  //     }
-  //   }
-  //   this.P = d2p(dists, this.perplexity, 1e-4);
-  //   this.N = N;
-  //   this.initSolution(); // refresh this
-  // }
+  updateDataRaw(point) {
+    this.X.push(point);
+
+    var dists = xtod(this.X); // convert X to distances using gaussian kernel
+    this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
+    this.N += 1; // back up the size of the dataset
+    
+    this.Y.push([randn(0.0, 1), randn(0.0, 1)]);
+    this.gains.push([0, 0]);
+    this.ystep.push([0, 0]);
+  }
 
   // (re)initializes the solution to random
   initSolution() {
@@ -325,8 +309,8 @@ class tSNE {
     var grad = cg.grad;
 
     var e = 1e-5;
-    for(var i=0;i<N;i++) {
-      for(var d=0;d<this.dim;d++) {
+    for(var i = 0; i < N; i++) {
+      for(var d = 0; d < this.dim; d++) {
         var yold = this.Y[i][d];
 
         this.Y[i][d] = yold + e;
@@ -355,10 +339,10 @@ class tSNE {
     // compute current Q distribution, unnormalized first
     var Qu = zeros(N * N);
     var qsum = 0.0;
-    for(var i=0;i<N;i++) {
-      for(var j=i+1;j<N;j++) {
+    for (var i = 0; i < N; i++) {
+      for (var j = i+1; j < N; j++) {
         var dsum = 0.0;
-        for(var d=0;d<dim;d++) {
+        for (var d = 0; d < dim; d++) {
           var dhere = Y[i][d] - Y[j][d];
           dsum += dhere * dhere;
         }
@@ -371,17 +355,17 @@ class tSNE {
     // normalize Q distribution to sum to 1
     var NN = N*N;
     var Q = zeros(NN);
-    for(var q=0;q<NN;q++) { Q[q] = Math.max(Qu[q] / qsum, 1e-100); }
+    for (var q = 0; q < NN; q++) { Q[q] = Math.max(Qu[q] / qsum, 1e-100);  }
 
-    var cost = 0.0;
-    var grad = [];
-    for(var i=0;i<N;i++) {
+    var cost = 0.0; 
+    var grad = []; 
+    for (var i = 0; i<N;i++) {
       var gsum = new Array(dim); // init grad for point i
-      for(var d=0;d<dim;d++) { gsum[d] = 0.0; }
-      for(var j=0;j<N;j++) {
+      for (var d = 0; d<dim; d++) { gsum[d] = 0.0;  }
+      for (var j = 0; j<N; j++) {
         cost += - P[i*N+j] * Math.log(Q[i*N+j]); // accumulate cost (the non-constant portion at least...)
         var premult = 4 * (pmul * P[i*N+j] - Q[i*N+j]) * Qu[i*N+j];
-        for(var d=0;d<dim;d++) {
+        for (var d = 0; d < dim; d++) {
           gsum[d] += premult * (Y[i][d] - Y[j][d]);
         }
       }
