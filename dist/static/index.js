@@ -39,7 +39,7 @@ var stateHistory = {
 
 var state = {
   init: false,
-  arrBrick: [],
+  arrPoint: [],
   ball: stateBall,
   history: stateHistory,
   panel: statePanel,

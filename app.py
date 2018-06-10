@@ -15,7 +15,7 @@ def api_initialize():
     print(request.get_json())
     # Here, only protocol related exception will be handled    
     arr_point = [embedding_feeder.get_point() for i in range(NUM_WORD)]
-    return jsonify({"arrBrick": arr_point})
+    return jsonify({"arrPoint": arr_point})
 
 @app.route("/api/feed_object", methods=["POST"])
 def api_feed_object():
