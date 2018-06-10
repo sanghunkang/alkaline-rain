@@ -93,7 +93,7 @@ var xtod = function(X) {
 }
 
 // compute (p_{i|j} + p_{j|i})/(2n)
-var d2p = function(D, perplexity, tol) {
+var d2p = (D, perplexity, tol)=> {
   var Nf = Math.sqrt(D.length); // this better be an integer
   var N = Math.floor(Nf);
   assert(N === Nf, "D should have square number of elements.");
@@ -101,7 +101,7 @@ var d2p = function(D, perplexity, tol) {
   var P = zeros(N * N); // temporary probability matrix
 
   var prow = zeros(N); // a temporary storage compartment
-  for(var i=0;i<N;i++) {
+  for (var i = 0 ; i < N; i++) {
     var betamin = -Infinity;
     var betamax = Infinity;
     var beta = 1; // initial value of precision
@@ -116,7 +116,7 @@ var d2p = function(D, perplexity, tol) {
 
       // compute entropy and kernel row with beta precision
       var psum = 0.0;
-      for(var j=0;j<N;j++) {
+      for(var j = 0; j < N; j++) {
         var pj = Math.exp(- D[i*N+j] * beta);
         if(i===j) { pj = 0; } // we dont care about diagonals
         prow[j] = pj;
@@ -226,7 +226,7 @@ class tSNE {
   updateDataRaw(point) {
     this.X.push(point);
 
-    var dists = xtod(this.X); // convert X to distances using gaussian kernel
+    let dists = xtod(this.X); // convert X to distances using gaussian kernel
     this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
     this.N += 1; // back up the size of the dataset
     
@@ -236,8 +236,8 @@ class tSNE {
   }
 
   // (re)initializes the solution to random
+  // generate random solution to t-SNE
   initSolution() {
-    // generate random solution to t-SNE
     this.Y = randn2d(this.N, this.dim); // the solution
     this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
     this.ystep = randn2d(this.N, this.dim, 0.0); // momentum accumulator

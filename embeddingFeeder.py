@@ -29,7 +29,10 @@ class EmbeddingFeeder():
 
     def _fetch_word(self):
         seed_key = "#" + str(self.seed)
+        # To check which word makes trouble
+        print(self.seed, )
         word = r.get(seed_key).decode("utf-8")
+        print(self.seed, word)
         return word
 
     def get_embedding(self, word):
@@ -44,10 +47,15 @@ class EmbeddingFeeder():
 
     def get_point(self):
         word = self._fetch_word()
-        print(word)
+        
+        # These lines are only to see what's happening on the client
+        status = 1
+        if len(self.arr_seed_used) > 40 :
+            status = 2
+
         point = {   "word": word,
                     "embedding": self.get_embedding(word),
-                    "status": 1}
+                    "status": status}
         self._set_seed()
         # The point of not directly returning a dictionary is to ensure seed update
         # is done on successful fetches

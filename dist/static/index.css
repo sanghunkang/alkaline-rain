@@ -1,0 +1,43 @@
+div {
+    border-style: solid;
+    border-width: 5px;
+}
+
+#panel {
+    border-style: solid;
+    border-width: 5px;
+}
+
+#panel-timer {
+    display: inline-block;
+    width: 25%;
+    border-style: solid;
+    border-width: 5px;
+}
+
+
+#panel-message {
+    display: inline-block;
+    color: #FFFFFF;
+    width: 50%;
+    border-style: solid;
+    border-width: 5px;
+}
+
+.normal {
+    background: #002244;
+}
+
+.warning {
+    background: rgb(237, 189, 89);
+}
+
+#controller {
+    text-align: center;
+}
+
+#input-cmd {
+    display: inline-block;
+    width: 50%;
+}
+

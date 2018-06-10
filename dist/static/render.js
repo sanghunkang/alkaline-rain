@@ -23,8 +23,9 @@ const rConst = {
 
 
 class Renderer {
-  constructor(ctx, state) {
+  constructor(ctx, document, state) {
     this.ctx = ctx;
+    this.document = document;
     this.state = state;
 
     this._renderBall = this._renderBall.bind(this);
@@ -46,16 +47,30 @@ class Renderer {
     this.state.arrBrick.map((brick)=> {
       this.ctx.beginPath();
       this.ctx.arc(brick.x, brick.y, 2, 0, Math.PI*2);
-      this.ctx.fillStyle = "#0095DD";
+      if (brick.status === 1) {
+        this.ctx.fillStyle = '#FF95DD';
+      } else if (brick.status === 2) {
+        this.ctx.fillStyle = '#0095DD';
+      }
+
       this.ctx.fill();
-      this.ctx.font = "15px Arial";
-      this.ctx.fillStyle = "#FF95DD";
+      this.ctx.font = '15px Arial';
+      this.ctx.fillStyle = '#FF95DD';
       this.ctx.fillText(brick.word, brick.x, brick.y);
       this.ctx.closePath();
     });
   }
 
   _renderPanel() {
+    let panelTimer = document.getElementById('panel-timer');
+    panelTimer.innerHTML = (this.state.panel.time/10).toString();//document.createTextNode((s.time/100).toString());
+    
+    let panelMessage = document.getElementById('panel-message');
+    panelMessage.setAttribute('class', this.state.panel.messageStatus);
+    panelMessage.innerHTML = this.state.panel.messageText;
+    // this.panel.innerHTML = content;
+    // panel.empty()//removeChild(panel.firstChild);
+    // panel.appendChild(content);
     ;
   }
 

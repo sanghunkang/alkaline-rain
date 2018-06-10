@@ -34,6 +34,7 @@ class StateCalculator {
     this._updateArrBrick = this._updateArrBrick.bind(this);
     this._updateStateBall = this._updateStateBall.bind(this);
     this._updateStatePanel = this._updateStatePanel.bind(this);
+    this._calculateSimilarity = this._calculateSimilarity.bind(this);
 
     this.calculateState = this.calculateState.bind(this);
     this.handleHitEnter = this.handleHitEnter.bind(this);
@@ -99,9 +100,19 @@ class StateCalculator {
   _updateStatePanel() {
     let s = this.state.panel;
     s.time += 1;
-    panel.removeChild(panel.firstChild);
-    let content = document.createTextNode((s.time/100).toString());
-    panel.appendChild(content);
+  }
+
+  _calculateSimilarity(X1, X2) {
+    let prodX1X2 = 0;
+    let l2normX1 = 0;
+    let l2normX2 = 0;
+    for (let i = 0; i < this.state.arrBrick.length; i++) {
+      prodX1X2 += X1[i]*X2[i];
+      l2normX1 += X1[i]*X1[i];
+      l2normX2 += X2[i]*X2[i];
+    }
+    let sim = prodX1X2/(Math.sqrt(l2normX1)*Math.sqrt(l2normX2));
+    console.log(sim);
   }
 
   calculateState() {
@@ -129,10 +140,20 @@ class StateCalculator {
         return res.json();
       })
       .then(data => {
-        console.log(data);
-        // Do something with the embedding
+        this.state.panel.messageText = 'Successful command';
+        this.state.panel.messageStatus = 'normal';
+        
+        this.state.history.data = data;
+
+        // Similarity calculation
+        this.state.arrBrick.map( brick => {
+          this._calculateSimilarity(brick.embedding, data.embedding)
+        });
       })
       .catch(err => {
+        console.log(err);
+        this.state.panel.messageText = 'Perhaps it\'s not really a word!';
+        this.state.panel.messageStatus = 'warning';
         console.log('Perhaps it\'s not really a word!');
       });
     }

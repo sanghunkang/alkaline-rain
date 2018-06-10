@@ -2,7 +2,7 @@ import { Renderer } from '/static/render.js';
 import { StateCalculator } from '/static/calculateState.js';
 
 const canvas = document.getElementById("myCanvas");
-const myInput = document.getElementById("myInput");
+const inputCmd = document.getElementById("input-cmd");
 const panel = document.getElementById('panel');
 
 
@@ -20,7 +20,9 @@ const rConst = {
 const ctx = canvas.getContext("2d");
 
 var statePanel = {
-  time: 0
+  time: 0,
+  messageText: 'No good message yet',
+  messageStatus: 'normal',
 }
 
 var stateBall = {
@@ -31,21 +33,26 @@ var stateBall = {
   dy: -2,
 }
 
+var stateHistory = {
+  data: []
+}
+
 var state = {
   init: false,
   arrBrick: [],
   ball: stateBall,
+  history: stateHistory,
   panel: statePanel,
 }
 
 // bind the state to the event listeners
-var renderer = new Renderer(ctx, state);
+var renderer = new Renderer(ctx, document, state);
 var stateCalculator = new StateCalculator(state);
 
 // Main actions 
 // Apply events listeners to elements
-myInput.addEventListener("input", e => console.log(e.target.value));
-myInput.addEventListener("keyup", stateCalculator.handleHitEnter);
+inputCmd.addEventListener("input", e => console.log(e.target.value));
+inputCmd.addEventListener("keyup", stateCalculator.handleHitEnter);
 
 // Render objects using rendering constants and state variables read-only
 setInterval(renderer.render, 10);

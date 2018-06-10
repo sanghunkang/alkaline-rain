@@ -7,16 +7,18 @@
       * { padding: 0; margin: 0; }
       canvas { background: #eee; display: block; margin: 0 auto; }
   </style>
+  <link rel="stylesheet" href="static/index.css">
 </head>
 <body>
   <div id="panel">
+    <div id="panel-timer"></div>
+    <div id="panel-message"></div>
   </div>
 
 
   <canvas id="myCanvas" width="600" height="400"></canvas>
-  <div>
-    <p>Enter the most intriguing word</p>
-    Enter Command: <input type="text" id="myInput" autofocus="autofocus" value="Hit command" />
+  <div id="controller">
+    <input type="text" id="input-cmd" autofocus="autofocus" placeholder="Enter the most intriguing word"/>
   </div>
 
   <script type="module" src="static/index.js"></script>
