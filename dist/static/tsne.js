@@ -199,7 +199,9 @@ class tSNE {
     this.iter = 0;
 
     this.initDataRaw = this.initDataRaw.bind(this);
-    this.updateDataRaw = this.updateDataRaw.bind(this);
+    this.insertDatapoint = this.insertDatapoint.bind(this);
+    this.removeDatapoints = this.removeDatapoints.bind(this);
+
     this.initSolution = this.initSolution.bind(this);
     this.getSolution = this.getSolution.bind(this);
     this.getNormCoef = this.getNormCoef.bind(this);
@@ -223,7 +225,7 @@ class tSNE {
     this.initSolution(); // refresh this
   }
 
-  updateDataRaw(point) {
+  insertDatapoint(point) {
     this.X.push(point);
 
     let dists = xtod(this.X); // convert X to distances using gaussian kernel
@@ -233,6 +235,24 @@ class tSNE {
     this.Y.push([randn(0.0, 1), randn(0.0, 1)]);
     this.gains.push([0, 0]);
     this.ystep.push([0, 0]);
+
+    console.log(this.X);
+    console.log(this.Y);
+  }
+
+  removeDatapoints(arrPoint) {
+    for (let i = arrPoint.length - 1; 0 <= i; i--) {
+      this.X.pop(arrPoint[i][0]);
+      this.Y.pop(arrPoint[i][0]);
+    }
+    console.log(this.X);
+    console.log(this.Y);
+    let dists = xtod(this.X); // convert X to distances using gaussian kernel
+    this.P = d2p(dists, this.perplexity, 1e-4);
+    this.N -= arrPoint.length;
+    // this.initSolution();
+    // this.gains.pop(arrPoint[i]);
+    // this.ystep.pop(arrPoint[i]);
   }
 
   // (re)initializes the solution to random

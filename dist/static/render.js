@@ -25,7 +25,6 @@ class Renderer {
     this.document = document;
     this.state = state;
 
-    this._renderBall = this._renderBall.bind(this);
     this._renderArrPoint = this._renderArrPoint.bind(this);
     this._renderPanel = this._renderPanel.bind(this);
     this.render = this.render.bind(this);

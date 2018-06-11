@@ -22,6 +22,7 @@ class StateCalculator {
     this._updateArrPoint = this._updateArrPoint.bind(this);
     this._updateStateBall = this._updateStateBall.bind(this);
     this._updateStatePanel = this._updateStatePanel.bind(this);
+    this._removeHitPoints = this._removeHitPoints.bind(this);
     this._calculateSimilarity = this._calculateSimilarity.bind(this);
     this._switchPanelMessage = this._switchPanelMessage.bind(this);
 
@@ -82,6 +83,14 @@ class StateCalculator {
     this.state.panel.time += 1
   }
 
+  _removeHitPoints(arrSim) {
+    let arrPointHit = arrSim.filter(sim => 0.7 < sim[1] && sim[1] < 1);
+    for (let i = arrPointHit.length - 1; 0 <= i; i--) {
+      this.state.arrPoint.pop(arrPointHit[i][0]);
+    }
+    tsne.removeDatapoints(arrPointHit);
+  }
+
   _calculateSimilarity(X1, X2) {
     let l2normX1 = X1.reduce( (x1, x2)=> { return x1 + x2*x2; } ); // Sum of squares
     let l2normX2 = X2.reduce( (x1, x2)=> { return x1 + x2*x2; } ); // Sum of squares
@@ -91,7 +100,8 @@ class StateCalculator {
     } // Inner product
 
     let sim = prodX1X2/(Math.sqrt(l2normX1)*Math.sqrt(l2normX2)); // Cosine similarity
-    console.log(sim);
+    return sim;
+    // console.log(sim);
   }
 
   _switchPanelMessage(messageStatus) {
@@ -129,9 +139,11 @@ class StateCalculator {
         this.state.history.data = data;
 
         // Similarity calculation
-        this.state.arrPoint.map( point => {
-          this._calculateSimilarity(point.embedding, data.embedding)
+        let arrSim = this.state.arrPoint.map((point, i) => {
+          return [i, this._calculateSimilarity(point.embedding, data.embedding)];
         });
+        console.log(arrSim);
+        this._removeHitPoints(arrSim);
       })
       .catch(err => this._switchPanelMessage('warning'));
     }
@@ -150,7 +162,7 @@ class StateCalculator {
     .then(data => {
       console.log(data);
       this.state.arrPoint.push(data.point);
-      tsne.updateDataRaw(data.point.embedding);
+      tsne.insertDatapoint(data.point.embedding);
     })
     .catch(err => console.log(err));
 
